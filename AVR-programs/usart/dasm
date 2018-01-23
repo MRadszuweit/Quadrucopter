@@ -1,0 +1,1433 @@
+
+uart64.o:     Dateiformat elf32-avr
+
+
+Disassembly of section .text:
+
+00000000 <__vector_9>:
+static volatile uint8_t sreg;
+
+/////////////////// interrupt handlers ////////////////////////////////
+
+
+ISR(TIMER2_COMP_vect){
+   0:	1f 92       	push	r1
+   2:	0f 92       	push	r0
+   4:	0f b6       	in	r0, 0x3f	; 63
+   6:	0f 92       	push	r0
+   8:	11 24       	eor	r1, r1
+   a:	8f 93       	push	r24
+	TCNT2 = 0x00;
+   c:	14 bc       	out	0x24, r1	; 36
+	counter2++;
+   e:	80 91 00 00 	lds	r24, 0x0000
+  12:	8f 5f       	subi	r24, 0xFF	; 255
+  14:	80 93 00 00 	sts	0x0000, r24
+}
+  18:	8f 91       	pop	r24
+  1a:	0f 90       	pop	r0
+  1c:	0f be       	out	0x3f, r0	; 63
+  1e:	0f 90       	pop	r0
+  20:	1f 90       	pop	r1
+  22:	18 95       	reti
+
+00000024 <uart_enable_receive_int>:
+}
+
+/////////////////////// functions /////////////////////////////////////
+
+void uart_enable_receive_int(uint8_t uart_ID){
+	if (uart_ID==UART0) UCSR0B |= (1<<RXCIE0);
+  24:	81 11       	cpse	r24, r1
+  26:	00 c0       	rjmp	.+0      	; 0x28 <uart_enable_receive_int+0x4>
+  28:	57 9a       	sbi	0x0a, 7	; 10
+  2a:	08 95       	ret
+	if (uart_ID==UART1) UCSR1B |= (1<<RXCIE1);
+  2c:	81 30       	cpi	r24, 0x01	; 1
+  2e:	01 f4       	brne	.+0      	; 0x30 <uart_enable_receive_int+0xc>
+  30:	80 91 9a 00 	lds	r24, 0x009A
+  34:	80 68       	ori	r24, 0x80	; 128
+  36:	80 93 9a 00 	sts	0x009A, r24
+  3a:	08 95       	ret
+
+0000003c <uart_enable_transmit_complete_int>:
+}
+
+void uart_enable_transmit_complete_int(uint8_t uart_ID){
+	if (uart_ID==UART0) UCSR0B |= (1<<TXCIE0);
+  3c:	81 11       	cpse	r24, r1
+  3e:	00 c0       	rjmp	.+0      	; 0x40 <uart_enable_transmit_complete_int+0x4>
+  40:	56 9a       	sbi	0x0a, 6	; 10
+  42:	08 95       	ret
+	if (uart_ID==UART1) UCSR1B |= (1<<TXCIE1);
+  44:	81 30       	cpi	r24, 0x01	; 1
+  46:	01 f4       	brne	.+0      	; 0x48 <uart_enable_transmit_complete_int+0xc>
+  48:	80 91 9a 00 	lds	r24, 0x009A
+  4c:	80 64       	ori	r24, 0x40	; 64
+  4e:	80 93 9a 00 	sts	0x009A, r24
+  52:	08 95       	ret
+
+00000054 <uart_enable_transmit_ready_int>:
+}
+
+void uart_enable_transmit_ready_int(uint8_t uart_ID){
+	if (uart_ID==UART0) UCSR0B |= (1<<UDRIE0);
+  54:	81 11       	cpse	r24, r1
+  56:	00 c0       	rjmp	.+0      	; 0x58 <uart_enable_transmit_ready_int+0x4>
+  58:	55 9a       	sbi	0x0a, 5	; 10
+  5a:	08 95       	ret
+	if (uart_ID==UART1) UCSR1B |= (1<<UDRIE1);
+  5c:	81 30       	cpi	r24, 0x01	; 1
+  5e:	01 f4       	brne	.+0      	; 0x60 <uart_enable_transmit_ready_int+0xc>
+  60:	80 91 9a 00 	lds	r24, 0x009A
+  64:	80 62       	ori	r24, 0x20	; 32
+  66:	80 93 9a 00 	sts	0x009A, r24
+  6a:	08 95       	ret
+
+0000006c <uart_set_dest_addr>:
+}
+
+void uart_set_dest_addr(uint8_t* addr){
+  6c:	20 e0       	ldi	r18, 0x00	; 0
+  6e:	30 e0       	ldi	r19, 0x00	; 0
+	uint8_t i;
+	for (i=0;i<8;i++) Dest_Addr[i] = addr[i];
+  70:	fc 01       	movw	r30, r24
+  72:	41 91       	ld	r20, Z+
+  74:	cf 01       	movw	r24, r30
+  76:	f9 01       	movw	r30, r18
+  78:	e0 50       	subi	r30, 0x00	; 0
+  7a:	f0 40       	sbci	r31, 0x00	; 0
+  7c:	40 83       	st	Z, r20
+  7e:	2f 5f       	subi	r18, 0xFF	; 255
+  80:	3f 4f       	sbci	r19, 0xFF	; 255
+  82:	28 30       	cpi	r18, 0x08	; 8
+  84:	31 05       	cpc	r19, r1
+  86:	01 f4       	brne	.+0      	; 0x88 <uart_set_dest_addr+0x1c>
+}
+  88:	08 95       	ret
+
+0000008a <uart_inc_counter2>:
+
+void uart_inc_counter2(){
+	counter2++;
+  8a:	80 91 00 00 	lds	r24, 0x0000
+  8e:	8f 5f       	subi	r24, 0xFF	; 255
+  90:	80 93 00 00 	sts	0x0000, r24
+  94:	08 95       	ret
+
+00000096 <start_timer2_1ms>:
+}
+
+void start_timer2_1ms(){
+	// configured for f_CPU=7.3728 Mhz and prescaler 64
+	// counts approx 1ms until match oocurs	
+	counter2 = 0x00;
+  96:	10 92 00 00 	sts	0x0000, r1
+	TCNT2 = 0x00;
+  9a:	14 bc       	out	0x24, r1	; 36
+	TCCR2 = (1<<WGM21) | (1<<CS21) | (1<<CS20);
+  9c:	8b e0       	ldi	r24, 0x0B	; 11
+  9e:	85 bd       	out	0x25, r24	; 37
+	OCR2 = 0x73; // ~115.2	
+  a0:	83 e7       	ldi	r24, 0x73	; 115
+  a2:	83 bd       	out	0x23, r24	; 35
+  a4:	08 95       	ret
+
+000000a6 <stop_timer2_1ms>:
+}
+
+void stop_timer2_1ms(){
+	TCCR2 &= ~((1<<CS22) | (1<<CS21) | (1<<CS20));
+  a6:	85 b5       	in	r24, 0x25	; 37
+  a8:	88 7f       	andi	r24, 0xF8	; 248
+  aa:	85 bd       	out	0x25, r24	; 37
+  ac:	08 95       	ret
+
+000000ae <insert_in_frame>:
+}
+
+void insert_in_frame(volatile uint8_t* Buffer,uint8_t c,uint8_t* pos,uint8_t* sum){
+  ae:	fa 01       	movw	r30, r20
+	if (c==API_DELIM | c==API_ESCAPE | c==API_XON | c==API_XOFF){		
+  b0:	56 2f       	mov	r21, r22
+  b2:	5d 7f       	andi	r21, 0xFD	; 253
+  b4:	40 81       	ld	r20, Z
+		Buffer[*pos] = API_ESCAPE;
+  b6:	dc 01       	movw	r26, r24
+  b8:	a4 0f       	add	r26, r20
+  ba:	b1 1d       	adc	r27, r1
+void stop_timer2_1ms(){
+	TCCR2 &= ~((1<<CS22) | (1<<CS21) | (1<<CS20));
+}
+
+void insert_in_frame(volatile uint8_t* Buffer,uint8_t c,uint8_t* pos,uint8_t* sum){
+	if (c==API_DELIM | c==API_ESCAPE | c==API_XON | c==API_XOFF){		
+  bc:	51 31       	cpi	r21, 0x11	; 17
+  be:	01 f0       	breq	.+0      	; 0xc0 <insert_in_frame+0x12>
+  c0:	53 e8       	ldi	r21, 0x83	; 131
+  c2:	56 0f       	add	r21, r22
+  c4:	52 30       	cpi	r21, 0x02	; 2
+  c6:	00 f4       	brcc	.+0      	; 0xc8 <insert_in_frame+0x1a>
+		Buffer[*pos] = API_ESCAPE;
+  c8:	4d e7       	ldi	r20, 0x7D	; 125
+  ca:	4c 93       	st	X, r20
+		(*pos)++;
+  cc:	40 81       	ld	r20, Z
+  ce:	4f 5f       	subi	r20, 0xFF	; 255
+  d0:	40 83       	st	Z, r20
+		Buffer[*pos] = c^API_XOR_MASK;
+  d2:	dc 01       	movw	r26, r24
+  d4:	a4 0f       	add	r26, r20
+  d6:	b1 1d       	adc	r27, r1
+  d8:	40 e2       	ldi	r20, 0x20	; 32
+  da:	46 27       	eor	r20, r22
+  dc:	4c 93       	st	X, r20
+  de:	00 c0       	rjmp	.+0      	; 0xe0 <insert_in_frame+0x32>
+		(*pos)++;
+	}
+	else {
+		Buffer[*pos] = c;
+  e0:	6c 93       	st	X, r22
+		(*pos)++;
+  e2:	80 81       	ld	r24, Z
+  e4:	8f 5f       	subi	r24, 0xFF	; 255
+  e6:	80 83       	st	Z, r24
+	}
+	(*sum) += c;
+  e8:	f9 01       	movw	r30, r18
+  ea:	80 81       	ld	r24, Z
+  ec:	86 0f       	add	r24, r22
+  ee:	80 83       	st	Z, r24
+  f0:	08 95       	ret
+
+000000f2 <compute_check_sum>:
+}
+
+uint8_t compute_check_sum(volatile uint8_t* Buffer,uint8_t start,uint8_t end){
+  f2:	cf 93       	push	r28
+  f4:	df 93       	push	r29
+  f6:	00 d0       	rcall	.+0      	; 0xf8 <compute_check_sum+0x6>
+  f8:	cd b7       	in	r28, 0x3d	; 61
+  fa:	de b7       	in	r29, 0x3e	; 62
+	uint8_t i;
+	volatile uint16 sum;
+	
+	sreg = SREG;
+  fc:	2f b7       	in	r18, 0x3f	; 63
+  fe:	20 93 00 00 	sts	0x0000, r18
+	cli();
+ 102:	f8 94       	cli
+	
+	sum.t16 = 0x0000;
+ 104:	1a 82       	std	Y+2, r1	; 0x02
+ 106:	19 82       	std	Y+1, r1	; 0x01
+	for (i=start;i<=end;i++) sum.t16 += Buffer[i];
+ 108:	46 17       	cp	r20, r22
+ 10a:	00 f0       	brcs	.+0      	; 0x10c <compute_check_sum+0x1a>
+ 10c:	29 81       	ldd	r18, Y+1	; 0x01
+ 10e:	3a 81       	ldd	r19, Y+2	; 0x02
+ 110:	fc 01       	movw	r30, r24
+ 112:	e6 0f       	add	r30, r22
+ 114:	f1 1d       	adc	r31, r1
+ 116:	50 81       	ld	r21, Z
+ 118:	25 0f       	add	r18, r21
+ 11a:	31 1d       	adc	r19, r1
+ 11c:	3a 83       	std	Y+2, r19	; 0x02
+ 11e:	29 83       	std	Y+1, r18	; 0x01
+ 120:	6f 5f       	subi	r22, 0xFF	; 255
+ 122:	00 c0       	rjmp	.+0      	; 0x124 <compute_check_sum+0x32>
+	uint8_t res = sum.t8[0];
+ 124:	89 81       	ldd	r24, Y+1	; 0x01
+	res = 0xFF-res;
+	
+	SREG = sreg;
+ 126:	90 91 00 00 	lds	r25, 0x0000
+ 12a:	9f bf       	out	0x3f, r25	; 63
+	return res;
+} 
+ 12c:	80 95       	com	r24
+ 12e:	0f 90       	pop	r0
+ 130:	0f 90       	pop	r0
+ 132:	df 91       	pop	r29
+ 134:	cf 91       	pop	r28
+ 136:	08 95       	ret
+
+00000138 <test_check_sum>:
+
+uint8_t test_check_sum(uint8_t* Buffer,uint8_t start,uint8_t end,uint8_t cs){
+ 138:	cf 93       	push	r28
+ 13a:	df 93       	push	r29
+ 13c:	00 d0       	rcall	.+0      	; 0x13e <test_check_sum+0x6>
+ 13e:	cd b7       	in	r28, 0x3d	; 61
+ 140:	de b7       	in	r29, 0x3e	; 62
+	uint8_t i;
+	volatile uint16 sum;
+	
+	sreg = SREG;
+ 142:	3f b7       	in	r19, 0x3f	; 63
+ 144:	30 93 00 00 	sts	0x0000, r19
+	cli();
+ 148:	f8 94       	cli
+	
+	sum.t16 = 0x0000;
+ 14a:	1a 82       	std	Y+2, r1	; 0x02
+ 14c:	19 82       	std	Y+1, r1	; 0x01
+	for (i=start;i<=end;i++) sum.t16 += Buffer[i];
+ 14e:	46 17       	cp	r20, r22
+ 150:	00 f0       	brcs	.+0      	; 0x152 <test_check_sum+0x1a>
+ 152:	e9 81       	ldd	r30, Y+1	; 0x01
+ 154:	fa 81       	ldd	r31, Y+2	; 0x02
+ 156:	dc 01       	movw	r26, r24
+ 158:	a6 0f       	add	r26, r22
+ 15a:	b1 1d       	adc	r27, r1
+ 15c:	3c 91       	ld	r19, X
+ 15e:	e3 0f       	add	r30, r19
+ 160:	f1 1d       	adc	r31, r1
+ 162:	fa 83       	std	Y+2, r31	; 0x02
+ 164:	e9 83       	std	Y+1, r30	; 0x01
+ 166:	6f 5f       	subi	r22, 0xFF	; 255
+ 168:	00 c0       	rjmp	.+0      	; 0x16a <test_check_sum+0x32>
+	uint8_t check_sum = cs+sum.t8[0];	
+ 16a:	99 81       	ldd	r25, Y+1	; 0x01
+	
+	SREG = sreg;
+ 16c:	80 91 00 00 	lds	r24, 0x0000
+ 170:	8f bf       	out	0x3f, r24	; 63
+	sreg = SREG;
+	cli();
+	
+	sum.t16 = 0x0000;
+	for (i=start;i<=end;i++) sum.t16 += Buffer[i];
+	uint8_t check_sum = cs+sum.t8[0];	
+ 172:	92 0f       	add	r25, r18
+	
+	SREG = sreg;
+	if (check_sum==0xFF) return SUCCESS; else return FAILED;	
+ 174:	81 e0       	ldi	r24, 0x01	; 1
+ 176:	9f 3f       	cpi	r25, 0xFF	; 255
+ 178:	01 f0       	breq	.+0      	; 0x17a <test_check_sum+0x42>
+ 17a:	80 e0       	ldi	r24, 0x00	; 0
+}
+ 17c:	0f 90       	pop	r0
+ 17e:	0f 90       	pop	r0
+ 180:	df 91       	pop	r29
+ 182:	cf 91       	pop	r28
+ 184:	08 95       	ret
+
+00000186 <enable_uart>:
+
+void enable_uart(uint8_t uart_ID,uint8_t frame_size,uint8_t stop_bits
+ ,uint8_t parity,uint8_t speed){	
+ 186:	ef 92       	push	r14
+ 188:	ff 92       	push	r15
+ 18a:	0f 93       	push	r16
+ 18c:	1f 93       	push	r17
+ 18e:	cf 93       	push	r28
+ 190:	df 93       	push	r29
+ 192:	cd b7       	in	r28, 0x3d	; 61
+ 194:	de b7       	in	r29, 0x3e	; 62
+ 196:	27 97       	sbiw	r28, 0x07	; 7
+ 198:	0f b6       	in	r0, 0x3f	; 63
+ 19a:	f8 94       	cli
+ 19c:	de bf       	out	0x3e, r29	; 62
+ 19e:	0f be       	out	0x3f, r0	; 63
+ 1a0:	cd bf       	out	0x3d, r28	; 61
+ 1a2:	f8 2e       	mov	r15, r24
+ 1a4:	16 2f       	mov	r17, r22
+ 1a6:	e2 2e       	mov	r14, r18
+	 
+	// ports
+	DDRD &= ~(1<<PD2);		// RXD input
+ 1a8:	8a 98       	cbi	0x11, 2	; 17
+	PORTD |= (1<<PD2);
+ 1aa:	92 9a       	sbi	0x12, 2	; 18
+	DDRD |= (1<<PD3);		// TXD output
+ 1ac:	8b 9a       	sbi	0x11, 3	; 17
+	
+	// baud rate
+	volatile union uint32 uart_presc;
+	uart_presc.t32 = F_CPU+BAUD*8;
+ 1ae:	80 e0       	ldi	r24, 0x00	; 0
+ 1b0:	9c ea       	ldi	r25, 0xAC	; 172
+ 1b2:	a1 e7       	ldi	r26, 0x71	; 113
+ 1b4:	b0 e0       	ldi	r27, 0x00	; 0
+ 1b6:	89 83       	std	Y+1, r24	; 0x01
+ 1b8:	9a 83       	std	Y+2, r25	; 0x02
+ 1ba:	ab 83       	std	Y+3, r26	; 0x03
+ 1bc:	bc 83       	std	Y+4, r27	; 0x04
+	uart_presc.t32 /= (uint32_t) 16*BAUD;
+ 1be:	69 81       	ldd	r22, Y+1	; 0x01
+ 1c0:	7a 81       	ldd	r23, Y+2	; 0x02
+ 1c2:	8b 81       	ldd	r24, Y+3	; 0x03
+ 1c4:	9c 81       	ldd	r25, Y+4	; 0x04
+ 1c6:	20 e0       	ldi	r18, 0x00	; 0
+ 1c8:	38 e5       	ldi	r19, 0x58	; 88
+ 1ca:	42 e0       	ldi	r20, 0x02	; 2
+ 1cc:	50 e0       	ldi	r21, 0x00	; 0
+ 1ce:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 1d2:	29 83       	std	Y+1, r18	; 0x01
+ 1d4:	3a 83       	std	Y+2, r19	; 0x02
+ 1d6:	4b 83       	std	Y+3, r20	; 0x03
+ 1d8:	5c 83       	std	Y+4, r21	; 0x04
+	uart_presc.t32 -= 1UL;		
+ 1da:	49 81       	ldd	r20, Y+1	; 0x01
+ 1dc:	5a 81       	ldd	r21, Y+2	; 0x02
+ 1de:	6b 81       	ldd	r22, Y+3	; 0x03
+ 1e0:	7c 81       	ldd	r23, Y+4	; 0x04
+ 1e2:	41 50       	subi	r20, 0x01	; 1
+ 1e4:	51 09       	sbc	r21, r1
+ 1e6:	61 09       	sbc	r22, r1
+ 1e8:	71 09       	sbc	r23, r1
+ 1ea:	49 83       	std	Y+1, r20	; 0x01
+ 1ec:	5a 83       	std	Y+2, r21	; 0x02
+ 1ee:	6b 83       	std	Y+3, r22	; 0x03
+ 1f0:	7c 83       	std	Y+4, r23	; 0x04
+	
+	volatile uint8_t A = 0x00;
+ 1f2:	1f 82       	std	Y+7, r1	; 0x07
+	volatile uint8_t B = 0x00;
+ 1f4:	1e 82       	std	Y+6, r1	; 0x06
+	volatile uint8_t C = 0x00;
+ 1f6:	1d 82       	std	Y+5, r1	; 0x05
+	
+	//register UCSRA
+	if (speed==UART_DOUBLE_SPEED) A |= (1<<U2X1);
+ 1f8:	01 30       	cpi	r16, 0x01	; 1
+ 1fa:	01 f4       	brne	.+0      	; 0x1fc <enable_uart+0x76>
+ 1fc:	8f 81       	ldd	r24, Y+7	; 0x07
+ 1fe:	82 60       	ori	r24, 0x02	; 2
+ 200:	8f 83       	std	Y+7, r24	; 0x07
+	
+	//register UCSRB
+	B |= (1<<RXEN1) | (1<<TXEN1);
+ 202:	8e 81       	ldd	r24, Y+6	; 0x06
+ 204:	88 61       	ori	r24, 0x18	; 24
+ 206:	8e 83       	std	Y+6, r24	; 0x06
+	if (frame_size>FRAME_8BIT) B |= (1<<UCSZ12);
+ 208:	14 30       	cpi	r17, 0x04	; 4
+ 20a:	00 f0       	brcs	.+0      	; 0x20c <enable_uart+0x86>
+ 20c:	8e 81       	ldd	r24, Y+6	; 0x06
+ 20e:	84 60       	ori	r24, 0x04	; 4
+ 210:	8e 83       	std	Y+6, r24	; 0x06
+	
+	//register UCSRC
+	if (parity==ODD_PARITY) C |= (1<<UPM11) | (1<<UPM10);
+ 212:	81 e0       	ldi	r24, 0x01	; 1
+ 214:	e8 12       	cpse	r14, r24
+ 216:	00 c0       	rjmp	.+0      	; 0x218 <enable_uart+0x92>
+ 218:	8d 81       	ldd	r24, Y+5	; 0x05
+ 21a:	80 63       	ori	r24, 0x30	; 48
+ 21c:	00 c0       	rjmp	.+0      	; 0x21e <enable_uart+0x98>
+	if (parity==EVEN_PARITY) C |= (1<<UPM11);
+ 21e:	82 e0       	ldi	r24, 0x02	; 2
+ 220:	e8 12       	cpse	r14, r24
+ 222:	00 c0       	rjmp	.+0      	; 0x224 <enable_uart+0x9e>
+ 224:	8d 81       	ldd	r24, Y+5	; 0x05
+ 226:	80 62       	ori	r24, 0x20	; 32
+ 228:	8d 83       	std	Y+5, r24	; 0x05
+	if (frame_size==FRAME_9BIT) C |= (1<<UCSZ11) | (1<<UCSZ10);
+ 22a:	17 30       	cpi	r17, 0x07	; 7
+ 22c:	01 f4       	brne	.+0      	; 0x22e <enable_uart+0xa8>
+ 22e:	8d 81       	ldd	r24, Y+5	; 0x05
+ 230:	86 60       	ori	r24, 0x06	; 6
+ 232:	8d 83       	std	Y+5, r24	; 0x05
+ 234:	00 c0       	rjmp	.+0      	; 0x236 <enable_uart+0xb0>
+	else C |= (1<<frame_size);
+ 236:	2d 81       	ldd	r18, Y+5	; 0x05
+ 238:	81 e0       	ldi	r24, 0x01	; 1
+ 23a:	90 e0       	ldi	r25, 0x00	; 0
+ 23c:	01 2e       	mov	r0, r17
+ 23e:	00 c0       	rjmp	.+0      	; 0x240 <enable_uart+0xba>
+ 240:	88 0f       	add	r24, r24
+ 242:	0a 94       	dec	r0
+ 244:	02 f4       	brpl	.+0      	; 0x246 <enable_uart+0xc0>
+ 246:	28 2b       	or	r18, r24
+ 248:	2d 83       	std	Y+5, r18	; 0x05
+	
+	
+	if (uart_ID==UART0){
+ 24a:	f1 10       	cpse	r15, r1
+ 24c:	00 c0       	rjmp	.+0      	; 0x24e <enable_uart+0xc8>
+		UCSR0A = A;
+ 24e:	8f 81       	ldd	r24, Y+7	; 0x07
+ 250:	8b b9       	out	0x0b, r24	; 11
+		UCSR0B = B;
+ 252:	8e 81       	ldd	r24, Y+6	; 0x06
+ 254:	8a b9       	out	0x0a, r24	; 10
+		UCSR0C = C;
+ 256:	8d 81       	ldd	r24, Y+5	; 0x05
+ 258:	80 93 95 00 	sts	0x0095, r24
+		UBRR0H = (uint8_t) uart_presc.t8.L1;
+ 25c:	8a 81       	ldd	r24, Y+2	; 0x02
+ 25e:	80 93 90 00 	sts	0x0090, r24
+		UBRR0L = (uint8_t) uart_presc.t8.L0;	
+ 262:	89 81       	ldd	r24, Y+1	; 0x01
+ 264:	89 b9       	out	0x09, r24	; 9
+ 266:	00 c0       	rjmp	.+0      	; 0x268 <enable_uart+0xe2>
+	}
+	if (uart_ID==UART1){
+ 268:	81 e0       	ldi	r24, 0x01	; 1
+ 26a:	f8 12       	cpse	r15, r24
+ 26c:	00 c0       	rjmp	.+0      	; 0x26e <enable_uart+0xe8>
+		UCSR1A = A;
+ 26e:	8f 81       	ldd	r24, Y+7	; 0x07
+ 270:	80 93 9b 00 	sts	0x009B, r24
+		//UCSR1B = B;
+		//UCSR1C = C;
+		//UBRR1H = (uint8_t) uart_presc.t8.L1;
+		//UBRR1L = (uint8_t) uart_presc.t8.L0;		
+		
+		UCSR1B = (1<<RXEN1) | (1<<TXEN1);	// enables receiver and transmitter
+ 274:	88 e1       	ldi	r24, 0x18	; 24
+ 276:	80 93 9a 00 	sts	0x009A, r24
+		UCSR1C = (1<<UCSZ1) | (1<<UCSZ0);	// no parity, one stop bit, 8 bit
+ 27a:	86 e0       	ldi	r24, 0x06	; 6
+ 27c:	80 93 9d 00 	sts	0x009D, r24
+		UBRR1H = 0x00;						// manuell seeting: 38400B @ 7372800Hz
+ 280:	10 92 98 00 	sts	0x0098, r1
+		UBRR1L = 0x0B;						// and single speed
+ 284:	8b e0       	ldi	r24, 0x0B	; 11
+ 286:	80 93 99 00 	sts	0x0099, r24
+	}
+}
+ 28a:	27 96       	adiw	r28, 0x07	; 7
+ 28c:	0f b6       	in	r0, 0x3f	; 63
+ 28e:	f8 94       	cli
+ 290:	de bf       	out	0x3e, r29	; 62
+ 292:	0f be       	out	0x3f, r0	; 63
+ 294:	cd bf       	out	0x3d, r28	; 61
+ 296:	df 91       	pop	r29
+ 298:	cf 91       	pop	r28
+ 29a:	1f 91       	pop	r17
+ 29c:	0f 91       	pop	r16
+ 29e:	ff 90       	pop	r15
+ 2a0:	ef 90       	pop	r14
+ 2a2:	08 95       	ret
+
+000002a4 <uart_transmit_byte>:
+
+void uart_transmit_byte(uint8_t uart_ID,unsigned char val){
+	if (uart_ID==UART0){
+ 2a4:	81 11       	cpse	r24, r1
+ 2a6:	00 c0       	rjmp	.+0      	; 0x2a8 <uart_transmit_byte+0x4>
+		while (!(UCSR0A & (1<<UDRE0))){};
+ 2a8:	5d 9b       	sbis	0x0b, 5	; 11
+ 2aa:	00 c0       	rjmp	.+0      	; 0x2ac <uart_transmit_byte+0x8>
+		UDR0 = val;
+ 2ac:	6c b9       	out	0x0c, r22	; 12
+ 2ae:	08 95       	ret
+	}
+	if (uart_ID==UART1){
+ 2b0:	81 30       	cpi	r24, 0x01	; 1
+ 2b2:	01 f4       	brne	.+0      	; 0x2b4 <uart_transmit_byte+0x10>
+		while (!(UCSR1A & (1<<UDRE1))){};
+ 2b4:	80 91 9b 00 	lds	r24, 0x009B
+ 2b8:	85 ff       	sbrs	r24, 5
+ 2ba:	00 c0       	rjmp	.+0      	; 0x2bc <uart_transmit_byte+0x18>
+		UDR1 = val;
+ 2bc:	60 93 9c 00 	sts	0x009C, r22
+ 2c0:	08 95       	ret
+
+000002c2 <transmit_API_frame_TX1>:
+	}
+}
+
+uint8_t transmit_API_frame_TX1(uint8_t* Data,uint8_t size,uint8_t ack,uint8_t opt,
+ uint8_t timeout){
+ 2c2:	9f 92       	push	r9
+ 2c4:	af 92       	push	r10
+ 2c6:	bf 92       	push	r11
+ 2c8:	cf 92       	push	r12
+ 2ca:	df 92       	push	r13
+ 2cc:	ef 92       	push	r14
+ 2ce:	ff 92       	push	r15
+ 2d0:	0f 93       	push	r16
+ 2d2:	1f 93       	push	r17
+ 2d4:	cf 93       	push	r28
+ 2d6:	df 93       	push	r29
+ 2d8:	00 d0       	rcall	.+0      	; 0x2da <transmit_API_frame_TX1+0x18>
+ 2da:	cd b7       	in	r28, 0x3d	; 61
+ 2dc:	de b7       	in	r29, 0x3e	; 62
+ 2de:	b8 2e       	mov	r11, r24
+ 2e0:	a9 2e       	mov	r10, r25
+ 2e2:	16 2f       	mov	r17, r22
+ 2e4:	f4 2e       	mov	r15, r20
+ 2e6:	92 2e       	mov	r9, r18
+	uint8_t i,len,sum,v;
+	uint8_t pos;
+	
+	if (PINE & (1<<PE7)) return FAILED;				// watch CTS from xbee (PE7)
+ 2e8:	0f 9b       	sbis	0x01, 7	; 1
+ 2ea:	00 c0       	rjmp	.+0      	; 0x2ec <transmit_API_frame_TX1+0x2a>
+ 2ec:	80 e0       	ldi	r24, 0x00	; 0
+ 2ee:	00 c0       	rjmp	.+0      	; 0x2f0 <transmit_API_frame_TX1+0x2e>
+													
+	// create frame
+	sum = 0x00;
+ 2f0:	1a 82       	std	Y+2, r1	; 0x02
+	pos = 0;
+	len = size+11;
+	TX_Buffer1[pos++] = API_DELIM;
+ 2f2:	8e e7       	ldi	r24, 0x7E	; 126
+ 2f4:	80 93 00 00 	sts	0x0000, r24
+	TX_Buffer1[pos++] = 0x00;
+ 2f8:	82 e0       	ldi	r24, 0x02	; 2
+ 2fa:	89 83       	std	Y+1, r24	; 0x01
+ 2fc:	10 92 00 00 	sts	0x0000, r1
+	insert_in_frame(TX_Buffer1,len,&pos,&sum);
+ 300:	9e 01       	movw	r18, r28
+ 302:	2e 5f       	subi	r18, 0xFE	; 254
+ 304:	3f 4f       	sbci	r19, 0xFF	; 255
+ 306:	ae 01       	movw	r20, r28
+ 308:	4f 5f       	subi	r20, 0xFF	; 255
+ 30a:	5f 4f       	sbci	r21, 0xFF	; 255
+ 30c:	6b e0       	ldi	r22, 0x0B	; 11
+ 30e:	61 0f       	add	r22, r17
+ 310:	80 e0       	ldi	r24, 0x00	; 0
+ 312:	90 e0       	ldi	r25, 0x00	; 0
+ 314:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	insert_in_frame(TX_Buffer1,API_TRANSMIT_REQUEST_64BIT,&pos,&sum);
+ 318:	9e 01       	movw	r18, r28
+ 31a:	2e 5f       	subi	r18, 0xFE	; 254
+ 31c:	3f 4f       	sbci	r19, 0xFF	; 255
+ 31e:	ae 01       	movw	r20, r28
+ 320:	4f 5f       	subi	r20, 0xFF	; 255
+ 322:	5f 4f       	sbci	r21, 0xFF	; 255
+ 324:	60 e0       	ldi	r22, 0x00	; 0
+ 326:	80 e0       	ldi	r24, 0x00	; 0
+ 328:	90 e0       	ldi	r25, 0x00	; 0
+ 32a:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	insert_in_frame(TX_Buffer1,ack,&pos,&sum);		
+ 32e:	9e 01       	movw	r18, r28
+ 330:	2e 5f       	subi	r18, 0xFE	; 254
+ 332:	3f 4f       	sbci	r19, 0xFF	; 255
+ 334:	ae 01       	movw	r20, r28
+ 336:	4f 5f       	subi	r20, 0xFF	; 255
+ 338:	5f 4f       	sbci	r21, 0xFF	; 255
+ 33a:	6f 2d       	mov	r22, r15
+ 33c:	80 e0       	ldi	r24, 0x00	; 0
+ 33e:	90 e0       	ldi	r25, 0x00	; 0
+ 340:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 344:	e1 2c       	mov	r14, r1
+ 346:	f1 2c       	mov	r15, r1
+	
+	for (i=0;i<8;i++){
+		v = Dest_Addr[i];
+ 348:	f7 01       	movw	r30, r14
+ 34a:	e0 50       	subi	r30, 0x00	; 0
+ 34c:	f0 40       	sbci	r31, 0x00	; 0
+ 34e:	60 81       	ld	r22, Z
+		insert_in_frame(TX_Buffer1,v,&pos,&sum);	
+ 350:	9e 01       	movw	r18, r28
+ 352:	2e 5f       	subi	r18, 0xFE	; 254
+ 354:	3f 4f       	sbci	r19, 0xFF	; 255
+ 356:	ae 01       	movw	r20, r28
+ 358:	4f 5f       	subi	r20, 0xFF	; 255
+ 35a:	5f 4f       	sbci	r21, 0xFF	; 255
+ 35c:	80 e0       	ldi	r24, 0x00	; 0
+ 35e:	90 e0       	ldi	r25, 0x00	; 0
+ 360:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 364:	8f ef       	ldi	r24, 0xFF	; 255
+ 366:	e8 1a       	sub	r14, r24
+ 368:	f8 0a       	sbc	r15, r24
+	TX_Buffer1[pos++] = 0x00;
+	insert_in_frame(TX_Buffer1,len,&pos,&sum);
+	insert_in_frame(TX_Buffer1,API_TRANSMIT_REQUEST_64BIT,&pos,&sum);
+	insert_in_frame(TX_Buffer1,ack,&pos,&sum);		
+	
+	for (i=0;i<8;i++){
+ 36a:	e8 e0       	ldi	r30, 0x08	; 8
+ 36c:	ee 16       	cp	r14, r30
+ 36e:	f1 04       	cpc	r15, r1
+ 370:	01 f4       	brne	.+0      	; 0x372 <transmit_API_frame_TX1+0xb0>
+		v = Dest_Addr[i];
+		insert_in_frame(TX_Buffer1,v,&pos,&sum);	
+	}
+	//for (i=0;i<8;i++) TX_Buffer1[pos++] = i;
+	
+	insert_in_frame(TX_Buffer1,opt,&pos,&sum);		
+ 372:	9e 01       	movw	r18, r28
+ 374:	2e 5f       	subi	r18, 0xFE	; 254
+ 376:	3f 4f       	sbci	r19, 0xFF	; 255
+ 378:	ae 01       	movw	r20, r28
+ 37a:	4f 5f       	subi	r20, 0xFF	; 255
+ 37c:	5f 4f       	sbci	r21, 0xFF	; 255
+ 37e:	69 2d       	mov	r22, r9
+ 380:	80 e0       	ldi	r24, 0x00	; 0
+ 382:	90 e0       	ldi	r25, 0x00	; 0
+ 384:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 388:	9b 2c       	mov	r9, r11
+	for (i=0;i<size;i++) insert_in_frame(TX_Buffer1,Data[i],&pos,&sum);	
+ 38a:	eb 2c       	mov	r14, r11
+ 38c:	fa 2c       	mov	r15, r10
+ 38e:	8e 2d       	mov	r24, r14
+ 390:	89 19       	sub	r24, r9
+ 392:	81 17       	cp	r24, r17
+ 394:	00 f4       	brcc	.+0      	; 0x396 <transmit_API_frame_TX1+0xd4>
+ 396:	f7 01       	movw	r30, r14
+ 398:	61 91       	ld	r22, Z+
+ 39a:	7f 01       	movw	r14, r30
+ 39c:	9e 01       	movw	r18, r28
+ 39e:	2e 5f       	subi	r18, 0xFE	; 254
+ 3a0:	3f 4f       	sbci	r19, 0xFF	; 255
+ 3a2:	ae 01       	movw	r20, r28
+ 3a4:	4f 5f       	subi	r20, 0xFF	; 255
+ 3a6:	5f 4f       	sbci	r21, 0xFF	; 255
+ 3a8:	80 e0       	ldi	r24, 0x00	; 0
+ 3aa:	90 e0       	ldi	r25, 0x00	; 0
+ 3ac:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 3b0:	00 c0       	rjmp	.+0      	; 0x3b2 <transmit_API_frame_TX1+0xf0>
+	
+	// insert checksum
+	sum = 0xFF-sum;
+ 3b2:	6a 81       	ldd	r22, Y+2	; 0x02
+ 3b4:	60 95       	com	r22
+ 3b6:	6a 83       	std	Y+2, r22	; 0x02
+	insert_in_frame(TX_Buffer1,sum,&pos,&sum);	
+ 3b8:	9e 01       	movw	r18, r28
+ 3ba:	2e 5f       	subi	r18, 0xFE	; 254
+ 3bc:	3f 4f       	sbci	r19, 0xFF	; 255
+ 3be:	ae 01       	movw	r20, r28
+ 3c0:	4f 5f       	subi	r20, 0xFF	; 255
+ 3c2:	5f 4f       	sbci	r21, 0xFF	; 255
+ 3c4:	80 e0       	ldi	r24, 0x00	; 0
+ 3c6:	90 e0       	ldi	r25, 0x00	; 0
+ 3c8:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	
+	// transmit
+	start_timer2_1ms();
+ 3cc:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	for (i=0;i<pos;i++){			
+ 3d0:	90 e0       	ldi	r25, 0x00	; 0
+		while (!(UCSR1A & (1<<UDRE1)) | (PINE & (1<<PE7))){
+ 3d2:	31 e0       	ldi	r19, 0x01	; 1
+	sum = 0xFF-sum;
+	insert_in_frame(TX_Buffer1,sum,&pos,&sum);	
+	
+	// transmit
+	start_timer2_1ms();
+	for (i=0;i<pos;i++){			
+ 3d4:	89 81       	ldd	r24, Y+1	; 0x01
+ 3d6:	98 17       	cp	r25, r24
+ 3d8:	00 f4       	brcc	.+0      	; 0x3da <transmit_API_frame_TX1+0x118>
+		while (!(UCSR1A & (1<<UDRE1)) | (PINE & (1<<PE7))){
+ 3da:	80 91 9b 00 	lds	r24, 0x009B
+ 3de:	21 b1       	in	r18, 0x01	; 1
+ 3e0:	82 95       	swap	r24
+ 3e2:	86 95       	lsr	r24
+ 3e4:	87 70       	andi	r24, 0x07	; 7
+ 3e6:	83 27       	eor	r24, r19
+ 3e8:	80 fb       	bst	r24, 0
+ 3ea:	cc 24       	eor	r12, r12
+ 3ec:	c0 f8       	bld	r12, 0
+ 3ee:	d1 2c       	mov	r13, r1
+ 3f0:	20 78       	andi	r18, 0x80	; 128
+ 3f2:	c2 2a       	or	r12, r18
+ 3f4:	cd 28       	or	r12, r13
+ 3f6:	01 f0       	breq	.+0      	; 0x3f8 <transmit_API_frame_TX1+0x136>
+		//while (!(UCSR1A & (1<<UDRE1))){
+			if (counter2>timeout) return FAILED;
+ 3f8:	80 91 00 00 	lds	r24, 0x0000
+ 3fc:	08 17       	cp	r16, r24
+ 3fe:	00 f4       	brcc	.+0      	; 0x400 <transmit_API_frame_TX1+0x13e>
+ 400:	00 c0       	rjmp	.+0      	; 0x402 <transmit_API_frame_TX1+0x140>
+		};		
+		UDR1 = TX_Buffer1[i];
+ 402:	e9 2f       	mov	r30, r25
+ 404:	f0 e0       	ldi	r31, 0x00	; 0
+ 406:	e0 50       	subi	r30, 0x00	; 0
+ 408:	f0 40       	sbci	r31, 0x00	; 0
+ 40a:	80 81       	ld	r24, Z
+ 40c:	80 93 9c 00 	sts	0x009C, r24
+		counter2 = 0x00;
+ 410:	10 92 00 00 	sts	0x0000, r1
+		TCNT2 = 0x00;
+ 414:	14 bc       	out	0x24, r1	; 36
+	sum = 0xFF-sum;
+	insert_in_frame(TX_Buffer1,sum,&pos,&sum);	
+	
+	// transmit
+	start_timer2_1ms();
+	for (i=0;i<pos;i++){			
+ 416:	9f 5f       	subi	r25, 0xFF	; 255
+ 418:	00 c0       	rjmp	.+0      	; 0x41a <transmit_API_frame_TX1+0x158>
+		};		
+		UDR1 = TX_Buffer1[i];
+		counter2 = 0x00;
+		TCNT2 = 0x00;
+	}
+	stop_timer2_1ms();
+ 41a:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	return SUCCESS;
+ 41e:	81 e0       	ldi	r24, 0x01	; 1
+}
+ 420:	0f 90       	pop	r0
+ 422:	0f 90       	pop	r0
+ 424:	df 91       	pop	r29
+ 426:	cf 91       	pop	r28
+ 428:	1f 91       	pop	r17
+ 42a:	0f 91       	pop	r16
+ 42c:	ff 90       	pop	r15
+ 42e:	ef 90       	pop	r14
+ 430:	df 90       	pop	r13
+ 432:	cf 90       	pop	r12
+ 434:	bf 90       	pop	r11
+ 436:	af 90       	pop	r10
+ 438:	9f 90       	pop	r9
+ 43a:	08 95       	ret
+
+0000043c <clean_RXBuffer1>:
+	counter2 = 0x00;
+}*/
+
+void clean_RXBuffer1(){
+	uint8_t i;
+	sreg = SREG;
+ 43c:	8f b7       	in	r24, 0x3f	; 63
+ 43e:	80 93 00 00 	sts	0x0000, r24
+	cli();
+ 442:	f8 94       	cli
+	
+	//handle buffer overflow: delete at least 8 oldest chars but try 
+	//to next delim	
+	if (RX_buff1_out==0){
+ 444:	80 91 00 00 	lds	r24, 0x0000
+ 448:	81 11       	cpse	r24, r1
+ 44a:	00 c0       	rjmp	.+0      	; 0x44c <clean_RXBuffer1+0x10>
+ 44c:	88 e0       	ldi	r24, 0x08	; 8
+		for (i=8;i<RX_buff1_in;i++){
+ 44e:	90 91 00 00 	lds	r25, 0x0000
+ 452:	89 17       	cp	r24, r25
+ 454:	00 f4       	brcc	.+0      	; 0x456 <clean_RXBuffer1+0x1a>
+			if (RX_Buffer1[i]==API_DELIM) break;			
+ 456:	e8 2f       	mov	r30, r24
+ 458:	f0 e0       	ldi	r31, 0x00	; 0
+ 45a:	e0 50       	subi	r30, 0x00	; 0
+ 45c:	f0 40       	sbci	r31, 0x00	; 0
+ 45e:	90 81       	ld	r25, Z
+ 460:	9e 37       	cpi	r25, 0x7E	; 126
+ 462:	01 f4       	brne	.+0      	; 0x464 <clean_RXBuffer1+0x28>
+		}
+		RX_buff1_out = i;
+ 464:	80 93 00 00 	sts	0x0000, r24
+ 468:	00 c0       	rjmp	.+0      	; 0x46a <clean_RXBuffer1+0x2e>
+	cli();
+	
+	//handle buffer overflow: delete at least 8 oldest chars but try 
+	//to next delim	
+	if (RX_buff1_out==0){
+		for (i=8;i<RX_buff1_in;i++){
+ 46a:	8f 5f       	subi	r24, 0xFF	; 255
+ 46c:	00 c0       	rjmp	.+0      	; 0x46e <clean_RXBuffer1+0x32>
+		}
+		RX_buff1_out = i;
+	}
+	
+	// shift chars
+	for (i=RX_buff1_out;i<RX_buff1_in;i++) RX_Buffer1[i-RX_buff1_out] = RX_Buffer1[i];
+ 46e:	20 91 00 00 	lds	r18, 0x0000
+ 472:	80 91 00 00 	lds	r24, 0x0000
+ 476:	28 17       	cp	r18, r24
+ 478:	00 f4       	brcc	.+0      	; 0x47a <clean_RXBuffer1+0x3e>
+ 47a:	82 2f       	mov	r24, r18
+ 47c:	90 e0       	ldi	r25, 0x00	; 0
+ 47e:	30 91 00 00 	lds	r19, 0x0000
+ 482:	fc 01       	movw	r30, r24
+ 484:	e3 1b       	sub	r30, r19
+ 486:	f1 09       	sbc	r31, r1
+ 488:	dc 01       	movw	r26, r24
+ 48a:	a0 50       	subi	r26, 0x00	; 0
+ 48c:	b0 40       	sbci	r27, 0x00	; 0
+ 48e:	8c 91       	ld	r24, X
+ 490:	e0 50       	subi	r30, 0x00	; 0
+ 492:	f0 40       	sbci	r31, 0x00	; 0
+ 494:	80 83       	st	Z, r24
+ 496:	2f 5f       	subi	r18, 0xFF	; 255
+ 498:	00 c0       	rjmp	.+0      	; 0x49a <clean_RXBuffer1+0x5e>
+	RX_buff1_in -= RX_buff1_out;
+ 49a:	80 91 00 00 	lds	r24, 0x0000
+ 49e:	90 91 00 00 	lds	r25, 0x0000
+ 4a2:	89 1b       	sub	r24, r25
+ 4a4:	80 93 00 00 	sts	0x0000, r24
+	RX_buff1_out = 0x00;
+ 4a8:	10 92 00 00 	sts	0x0000, r1
+	SREG = sreg;
+ 4ac:	80 91 00 00 	lds	r24, 0x0000
+ 4b0:	8f bf       	out	0x3f, r24	; 63
+ 4b2:	08 95       	ret
+
+000004b4 <__vector_30>:
+ISR(TIMER2_COMP_vect){
+	TCNT2 = 0x00;
+	counter2++;
+}
+
+ISR(USART1_RX_vect){
+ 4b4:	1f 92       	push	r1
+ 4b6:	0f 92       	push	r0
+ 4b8:	0f b6       	in	r0, 0x3f	; 63
+ 4ba:	0f 92       	push	r0
+ 4bc:	11 24       	eor	r1, r1
+ 4be:	2f 93       	push	r18
+ 4c0:	3f 93       	push	r19
+ 4c2:	4f 93       	push	r20
+ 4c4:	5f 93       	push	r21
+ 4c6:	6f 93       	push	r22
+ 4c8:	7f 93       	push	r23
+ 4ca:	8f 93       	push	r24
+ 4cc:	9f 93       	push	r25
+ 4ce:	af 93       	push	r26
+ 4d0:	bf 93       	push	r27
+ 4d2:	ef 93       	push	r30
+ 4d4:	ff 93       	push	r31
+	char c = UDR1;
+ 4d6:	80 91 9c 00 	lds	r24, 0x009C
+	RX_Buffer1[RX_buff1_in] = c;
+ 4da:	e0 91 00 00 	lds	r30, 0x0000
+ 4de:	f0 e0       	ldi	r31, 0x00	; 0
+ 4e0:	e0 50       	subi	r30, 0x00	; 0
+ 4e2:	f0 40       	sbci	r31, 0x00	; 0
+ 4e4:	80 83       	st	Z, r24
+	if (c==API_DELIM) delim_flag = YES;
+ 4e6:	8e 37       	cpi	r24, 0x7E	; 126
+ 4e8:	01 f4       	brne	.+0      	; 0x4ea <__vector_30+0x36>
+ 4ea:	81 e0       	ldi	r24, 0x01	; 1
+ 4ec:	80 93 00 00 	sts	0x0000, r24
+	RX_buff1_in++;
+ 4f0:	80 91 00 00 	lds	r24, 0x0000
+ 4f4:	8f 5f       	subi	r24, 0xFF	; 255
+ 4f6:	80 93 00 00 	sts	0x0000, r24
+	if (RX_buff1_in==BUFFER_SIZE-1){
+ 4fa:	80 91 00 00 	lds	r24, 0x0000
+ 4fe:	8e 3f       	cpi	r24, 0xFE	; 254
+ 500:	01 f4       	brne	.+0      	; 0x502 <__vector_30+0x4e>
+		PORTE |= (1<<PE2);							// use PE2 as RTS indicator 
+ 502:	1a 9a       	sbi	0x03, 2	; 3
+		clean_RXBuffer1();
+ 504:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+		PORTE &= ~(1<<PE2);
+ 508:	1a 98       	cbi	0x03, 2	; 3
+	}
+	
+	if (PINE && (1<<PE3)) PORTE &= ~(1<<PIN3); else PORTE |= (1<<PE3);
+ 50a:	81 b1       	in	r24, 0x01	; 1
+ 50c:	88 23       	and	r24, r24
+ 50e:	01 f0       	breq	.+0      	; 0x510 <__vector_30+0x5c>
+ 510:	1b 98       	cbi	0x03, 3	; 3
+ 512:	00 c0       	rjmp	.+0      	; 0x514 <__vector_30+0x60>
+ 514:	1b 9a       	sbi	0x03, 3	; 3
+}
+ 516:	ff 91       	pop	r31
+ 518:	ef 91       	pop	r30
+ 51a:	bf 91       	pop	r27
+ 51c:	af 91       	pop	r26
+ 51e:	9f 91       	pop	r25
+ 520:	8f 91       	pop	r24
+ 522:	7f 91       	pop	r23
+ 524:	6f 91       	pop	r22
+ 526:	5f 91       	pop	r21
+ 528:	4f 91       	pop	r20
+ 52a:	3f 91       	pop	r19
+ 52c:	2f 91       	pop	r18
+ 52e:	0f 90       	pop	r0
+ 530:	0f be       	out	0x3f, r0	; 63
+ 532:	0f 90       	pop	r0
+ 534:	1f 90       	pop	r1
+ 536:	18 95       	reti
+
+00000538 <reset_RXBuffer1>:
+	
+	SREG = sreg;
+}*/
+
+void reset_RXBuffer1(){
+	sreg = SREG;
+ 538:	8f b7       	in	r24, 0x3f	; 63
+ 53a:	80 93 00 00 	sts	0x0000, r24
+	cli();
+ 53e:	f8 94       	cli
+	RX_buff1_in = 0x00;
+ 540:	10 92 00 00 	sts	0x0000, r1
+	RX_buff1_out = 0x00;
+ 544:	10 92 00 00 	sts	0x0000, r1
+	SREG = sreg;
+ 548:	80 91 00 00 	lds	r24, 0x0000
+ 54c:	8f bf       	out	0x3f, r24	; 63
+ 54e:	08 95       	ret
+
+00000550 <RXBuffer1_immediate_read>:
+}
+
+uint8_t RXBuffer1_immediate_read(uint8_t* X){
+	uint8_t status;
+	sreg = SREG;
+ 550:	2f b7       	in	r18, 0x3f	; 63
+ 552:	20 93 00 00 	sts	0x0000, r18
+	cli();
+ 556:	f8 94       	cli
+	if (RX_buff1_in-RX_buff1_out==0x00) status = FAILED;
+ 558:	30 91 00 00 	lds	r19, 0x0000
+ 55c:	20 91 00 00 	lds	r18, 0x0000
+ 560:	32 17       	cp	r19, r18
+ 562:	01 f0       	breq	.+0      	; 0x564 <RXBuffer1_immediate_read+0x14>
+	else{
+		*X = RX_Buffer1[RX_buff1_out];
+ 564:	e0 91 00 00 	lds	r30, 0x0000
+ 568:	f0 e0       	ldi	r31, 0x00	; 0
+ 56a:	e0 50       	subi	r30, 0x00	; 0
+ 56c:	f0 40       	sbci	r31, 0x00	; 0
+ 56e:	20 81       	ld	r18, Z
+ 570:	fc 01       	movw	r30, r24
+ 572:	20 83       	st	Z, r18
+		RX_buff1_out++;
+ 574:	80 91 00 00 	lds	r24, 0x0000
+ 578:	8f 5f       	subi	r24, 0xFF	; 255
+ 57a:	80 93 00 00 	sts	0x0000, r24
+		if (*X==API_DELIM) delim_flag = NO;
+ 57e:	2e 37       	cpi	r18, 0x7E	; 126
+ 580:	01 f4       	brne	.+0      	; 0x582 <RXBuffer1_immediate_read+0x32>
+ 582:	10 92 00 00 	sts	0x0000, r1
+ 586:	00 c0       	rjmp	.+0      	; 0x588 <RXBuffer1_immediate_read+0x38>
+
+uint8_t RXBuffer1_immediate_read(uint8_t* X){
+	uint8_t status;
+	sreg = SREG;
+	cli();
+	if (RX_buff1_in-RX_buff1_out==0x00) status = FAILED;
+ 588:	80 e0       	ldi	r24, 0x00	; 0
+ 58a:	00 c0       	rjmp	.+0      	; 0x58c <RXBuffer1_immediate_read+0x3c>
+	else{
+		*X = RX_Buffer1[RX_buff1_out];
+		RX_buff1_out++;
+		if (*X==API_DELIM) delim_flag = NO;
+		status = SUCCESS;
+ 58c:	81 e0       	ldi	r24, 0x01	; 1
+	}
+	
+	SREG = sreg;
+ 58e:	90 91 00 00 	lds	r25, 0x0000
+ 592:	9f bf       	out	0x3f, r25	; 63
+	return status;
+}
+ 594:	08 95       	ret
+
+00000596 <RXBuffer1_timed_read>:
+
+uint8_t RXBuffer1_timed_read(uint8_t* Buffer,uint8_t max,uint8_t timeout){	
+ 596:	ef 92       	push	r14
+ 598:	ff 92       	push	r15
+ 59a:	0f 93       	push	r16
+ 59c:	1f 93       	push	r17
+ 59e:	cf 93       	push	r28
+ 5a0:	df 93       	push	r29
+ 5a2:	1f 92       	push	r1
+ 5a4:	cd b7       	in	r28, 0x3d	; 61
+ 5a6:	de b7       	in	r29, 0x3e	; 62
+ 5a8:	8c 01       	movw	r16, r24
+ 5aa:	e6 2e       	mov	r14, r22
+ 5ac:	f4 2e       	mov	r15, r20
+	volatile uint8_t counter = 0x00;	
+ 5ae:	19 82       	std	Y+1, r1	; 0x01
+	TIMSK |= (1<<OCIE2);
+ 5b0:	87 b7       	in	r24, 0x37	; 55
+ 5b2:	80 68       	ori	r24, 0x80	; 128
+ 5b4:	87 bf       	out	0x37, r24	; 55
+	start_timer2_1ms();
+ 5b6:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	
+	while(counter<max && counter2<timeout){
+ 5ba:	89 81       	ldd	r24, Y+1	; 0x01
+ 5bc:	8e 15       	cp	r24, r14
+ 5be:	00 f4       	brcc	.+0      	; 0x5c0 <RXBuffer1_timed_read+0x2a>
+ 5c0:	80 91 00 00 	lds	r24, 0x0000
+ 5c4:	8f 15       	cp	r24, r15
+ 5c6:	00 f4       	brcc	.+0      	; 0x5c8 <RXBuffer1_timed_read+0x32>
+		if (RXBuffer1_immediate_read(Buffer)==SUCCESS){
+ 5c8:	c8 01       	movw	r24, r16
+ 5ca:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 5ce:	81 30       	cpi	r24, 0x01	; 1
+ 5d0:	01 f4       	brne	.+0      	; 0x5d2 <RXBuffer1_timed_read+0x3c>
+			Buffer++;
+ 5d2:	0f 5f       	subi	r16, 0xFF	; 255
+ 5d4:	1f 4f       	sbci	r17, 0xFF	; 255
+			counter++;			
+ 5d6:	89 81       	ldd	r24, Y+1	; 0x01
+ 5d8:	8f 5f       	subi	r24, 0xFF	; 255
+ 5da:	89 83       	std	Y+1, r24	; 0x01
+ 5dc:	00 c0       	rjmp	.+0      	; 0x5de <RXBuffer1_timed_read+0x48>
+		}
+	}
+	
+	stop_timer2_1ms();
+ 5de:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	TIMSK &= ~(1<<OCIE2);
+ 5e2:	87 b7       	in	r24, 0x37	; 55
+ 5e4:	8f 77       	andi	r24, 0x7F	; 127
+ 5e6:	87 bf       	out	0x37, r24	; 55
+	return counter;
+ 5e8:	89 81       	ldd	r24, Y+1	; 0x01
+}
+ 5ea:	0f 90       	pop	r0
+ 5ec:	df 91       	pop	r29
+ 5ee:	cf 91       	pop	r28
+ 5f0:	1f 91       	pop	r17
+ 5f2:	0f 91       	pop	r16
+ 5f4:	ff 90       	pop	r15
+ 5f6:	ef 90       	pop	r14
+ 5f8:	08 95       	ret
+
+000005fa <count_RXBuffer1>:
+
+uint8_t count_RXBuffer1(){
+	return RX_buff1_in-RX_buff1_out;
+ 5fa:	80 91 00 00 	lds	r24, 0x0000
+ 5fe:	90 91 00 00 	lds	r25, 0x0000
+}
+ 602:	89 1b       	sub	r24, r25
+ 604:	08 95       	ret
+
+00000606 <init_RXstream1>:
+
+void init_RXstream1(){
+	reset_RXBuffer1();
+ 606:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	uart_enable_receive_int(UART1);
+ 60a:	81 e0       	ldi	r24, 0x01	; 1
+ 60c:	0c 94 00 00 	jmp	0	; 0x0 <__vector_9>
+
+00000610 <read_RX1Buffer_until_delim>:
+}
+
+uint8_t read_RX1Buffer_until_delim(uint8_t timeout){	
+ 610:	1f 93       	push	r17
+ 612:	cf 93       	push	r28
+ 614:	df 93       	push	r29
+ 616:	00 d0       	rcall	.+0      	; 0x618 <read_RX1Buffer_until_delim+0x8>
+ 618:	cd b7       	in	r28, 0x3d	; 61
+ 61a:	de b7       	in	r29, 0x3e	; 62
+ 61c:	18 2f       	mov	r17, r24
+	uint8_t c;
+	
+	uint8_t status = FAILED;
+	TIMSK |= (1<<OCIE2);
+ 61e:	97 b7       	in	r25, 0x37	; 55
+ 620:	90 68       	ori	r25, 0x80	; 128
+ 622:	97 bf       	out	0x37, r25	; 55
+	start_timer2_1ms();
+ 624:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	
+	while(counter2<timeout){
+ 628:	80 91 00 00 	lds	r24, 0x0000
+ 62c:	81 17       	cp	r24, r17
+ 62e:	00 f4       	brcc	.+0      	; 0x630 <read_RX1Buffer_until_delim+0x20>
+		if (RXBuffer1_immediate_read(&c)==SUCCESS){
+ 630:	ce 01       	movw	r24, r28
+ 632:	01 96       	adiw	r24, 0x01	; 1
+ 634:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 638:	81 30       	cpi	r24, 0x01	; 1
+ 63a:	01 f4       	brne	.+0      	; 0x63c <read_RX1Buffer_until_delim+0x2c>
+			status = SUCCESS;
+ 63c:	81 e0       	ldi	r24, 0x01	; 1
+ 63e:	00 c0       	rjmp	.+0      	; 0x640 <read_RX1Buffer_until_delim+0x30>
+}
+
+uint8_t read_RX1Buffer_until_delim(uint8_t timeout){	
+	uint8_t c;
+	
+	uint8_t status = FAILED;
+ 640:	80 e0       	ldi	r24, 0x00	; 0
+			status = SUCCESS;
+			break;
+		}
+	}
+	
+	stop_timer2_1ms();
+ 642:	8a 83       	std	Y+2, r24	; 0x02
+ 644:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	TIMSK &= ~(1<<OCIE2);
+ 648:	97 b7       	in	r25, 0x37	; 55
+ 64a:	9f 77       	andi	r25, 0x7F	; 127
+ 64c:	97 bf       	out	0x37, r25	; 55
+	return status;
+}
+ 64e:	8a 81       	ldd	r24, Y+2	; 0x02
+ 650:	0f 90       	pop	r0
+ 652:	0f 90       	pop	r0
+ 654:	df 91       	pop	r29
+ 656:	cf 91       	pop	r28
+ 658:	1f 91       	pop	r17
+ 65a:	08 95       	ret
+
+0000065c <recover_special_chars>:
+
+void recover_special_chars(uint8_t* Buffer,uint8_t start,volatile uint8_t* end){	// end=size
+ 65c:	1f 93       	push	r17
+ 65e:	cf 93       	push	r28
+ 660:	df 93       	push	r29
+ 662:	fa 01       	movw	r30, r20
+	uint8_t j;
+	uint8_t i =0;
+ 664:	60 e0       	ldi	r22, 0x00	; 0
+	while (i<*end){
+		if (Buffer[i]==API_ESCAPE){	
+			for (j=i;j<(*end)-1;j++) Buffer[j] = Buffer[j+1];
+			Buffer[i] ^= API_XOR_MASK;
+ 666:	10 e2       	ldi	r17, 0x20	; 32
+}
+
+void recover_special_chars(uint8_t* Buffer,uint8_t start,volatile uint8_t* end){	// end=size
+	uint8_t j;
+	uint8_t i =0;
+	while (i<*end){
+ 668:	20 81       	ld	r18, Z
+ 66a:	62 17       	cp	r22, r18
+ 66c:	00 f4       	brcc	.+0      	; 0x66e <recover_special_chars+0x12>
+		if (Buffer[i]==API_ESCAPE){	
+ 66e:	dc 01       	movw	r26, r24
+ 670:	a6 0f       	add	r26, r22
+ 672:	b1 1d       	adc	r27, r1
+ 674:	2c 91       	ld	r18, X
+ 676:	2d 37       	cpi	r18, 0x7D	; 125
+ 678:	01 f4       	brne	.+0      	; 0x67a <recover_special_chars+0x1e>
+ 67a:	76 2f       	mov	r23, r22
+			for (j=i;j<(*end)-1;j++) Buffer[j] = Buffer[j+1];
+ 67c:	20 81       	ld	r18, Z
+ 67e:	47 2f       	mov	r20, r23
+ 680:	50 e0       	ldi	r21, 0x00	; 0
+ 682:	30 e0       	ldi	r19, 0x00	; 0
+ 684:	21 50       	subi	r18, 0x01	; 1
+ 686:	31 09       	sbc	r19, r1
+ 688:	42 17       	cp	r20, r18
+ 68a:	53 07       	cpc	r21, r19
+ 68c:	04 f4       	brge	.+0      	; 0x68e <recover_special_chars+0x32>
+ 68e:	ec 01       	movw	r28, r24
+ 690:	c4 0f       	add	r28, r20
+ 692:	d5 1f       	adc	r29, r21
+ 694:	29 81       	ldd	r18, Y+1	; 0x01
+ 696:	28 83       	st	Y, r18
+ 698:	7f 5f       	subi	r23, 0xFF	; 255
+ 69a:	00 c0       	rjmp	.+0      	; 0x69c <recover_special_chars+0x40>
+			Buffer[i] ^= API_XOR_MASK;
+ 69c:	2c 91       	ld	r18, X
+ 69e:	21 27       	eor	r18, r17
+ 6a0:	2c 93       	st	X, r18
+			(*end)--;
+ 6a2:	20 81       	ld	r18, Z
+ 6a4:	21 50       	subi	r18, 0x01	; 1
+ 6a6:	20 83       	st	Z, r18
+		}
+		i++;
+ 6a8:	6f 5f       	subi	r22, 0xFF	; 255
+ 6aa:	00 c0       	rjmp	.+0      	; 0x6ac <recover_special_chars+0x50>
+	}	
+}
+ 6ac:	df 91       	pop	r29
+ 6ae:	cf 91       	pop	r28
+ 6b0:	1f 91       	pop	r17
+ 6b2:	08 95       	ret
+
+000006b4 <read_API_Buffer1>:
+	i -= RX_buff1_out;
+	SREG = sreg;
+	return i;
+}*/
+
+uint8_t read_API_Buffer1(uint8_t* Buffer,uint8_t* size,uint8_t timeout){
+ 6b4:	9f 92       	push	r9
+ 6b6:	af 92       	push	r10
+ 6b8:	bf 92       	push	r11
+ 6ba:	cf 92       	push	r12
+ 6bc:	df 92       	push	r13
+ 6be:	ef 92       	push	r14
+ 6c0:	ff 92       	push	r15
+ 6c2:	0f 93       	push	r16
+ 6c4:	1f 93       	push	r17
+ 6c6:	cf 93       	push	r28
+ 6c8:	df 93       	push	r29
+ 6ca:	00 d0       	rcall	.+0      	; 0x6cc <read_API_Buffer1+0x18>
+ 6cc:	1f 92       	push	r1
+ 6ce:	cd b7       	in	r28, 0x3d	; 61
+ 6d0:	de b7       	in	r29, 0x3e	; 62
+ 6d2:	8c 01       	movw	r16, r24
+ 6d4:	7b 01       	movw	r14, r22
+ 6d6:	b4 2e       	mov	r11, r20
+	uint8_t i,c,status,counter,length,pos,xor;
+
+	*size = 0;
+ 6d8:	fb 01       	movw	r30, r22
+ 6da:	10 82       	st	Z, r1
+	
+	// wait until delim arrived
+	if(read_RX1Buffer_until_delim(timeout)==FAILED) return FAILED;
+ 6dc:	84 2f       	mov	r24, r20
+ 6de:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 6e2:	81 11       	cpse	r24, r1
+ 6e4:	00 c0       	rjmp	.+0      	; 0x6e6 <read_API_Buffer1+0x32>
+ 6e6:	80 e0       	ldi	r24, 0x00	; 0
+ 6e8:	00 c0       	rjmp	.+0      	; 0x6ea <read_API_Buffer1+0x36>
+	
+	// read frame length
+	pos = 0x04;
+ 6ea:	84 e0       	ldi	r24, 0x04	; 4
+ 6ec:	89 83       	std	Y+1, r24	; 0x01
+	status = RXBuffer1_timed_read(Buffer,pos,timeout);
+ 6ee:	4b 2d       	mov	r20, r11
+ 6f0:	64 e0       	ldi	r22, 0x04	; 4
+ 6f2:	c8 01       	movw	r24, r16
+ 6f4:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	if (status<pos) return FAILED;	
+ 6f8:	99 81       	ldd	r25, Y+1	; 0x01
+ 6fa:	89 17       	cp	r24, r25
+ 6fc:	00 f0       	brcs	.+0      	; 0x6fe <read_API_Buffer1+0x4a>
+	recover_special_chars(Buffer,0x00,&pos);
+ 6fe:	ae 01       	movw	r20, r28
+ 700:	4f 5f       	subi	r20, 0xFF	; 255
+ 702:	5f 4f       	sbci	r21, 0xFF	; 255
+ 704:	60 e0       	ldi	r22, 0x00	; 0
+ 706:	c8 01       	movw	r24, r16
+ 708:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+	if (pos<0x02) return FAILED;
+ 70c:	89 81       	ldd	r24, Y+1	; 0x01
+ 70e:	82 30       	cpi	r24, 0x02	; 2
+ 710:	00 f0       	brcs	.+0      	; 0x712 <read_API_Buffer1+0x5e>
+	if (Buffer[0]!=0x00) return FAILED;
+ 712:	f8 01       	movw	r30, r16
+ 714:	90 81       	ld	r25, Z
+ 716:	91 11       	cpse	r25, r1
+ 718:	00 c0       	rjmp	.+0      	; 0x71a <read_API_Buffer1+0x66>
+	length = Buffer[1];
+ 71a:	c1 80       	ldd	r12, Z+1	; 0x01
+ 71c:	d8 01       	movw	r26, r16
+ 71e:	12 96       	adiw	r26, 0x02	; 2
+	for (i=0x02;i<pos;i++) Buffer[i-2] = Buffer[i];
+ 720:	f8 01       	movw	r30, r16
+ 722:	92 e0       	ldi	r25, 0x02	; 2
+ 724:	90 1b       	sub	r25, r16
+ 726:	29 2f       	mov	r18, r25
+ 728:	2e 0f       	add	r18, r30
+ 72a:	28 17       	cp	r18, r24
+ 72c:	00 f4       	brcc	.+0      	; 0x72e <read_API_Buffer1+0x7a>
+ 72e:	2d 91       	ld	r18, X+
+ 730:	21 93       	st	Z+, r18
+ 732:	00 c0       	rjmp	.+0      	; 0x734 <read_API_Buffer1+0x80>
+	pos -= 0x02;
+ 734:	82 50       	subi	r24, 0x02	; 2
+ 736:	89 83       	std	Y+1, r24	; 0x01
+	
+	// read $length characters
+	xor = NO;
+ 738:	50 e0       	ldi	r21, 0x00	; 0
+	counter = 0x00;
+ 73a:	a1 2c       	mov	r10, r1
+	while (counter<length+1){
+ 73c:	d1 2c       	mov	r13, r1
+		if (RXBuffer1_timed_read(&c,1,timeout)==FAILED) return FAILED;
+		if (xor==YES){		
+		    c ^= API_XOR_MASK;
+ 73e:	80 e2       	ldi	r24, 0x20	; 32
+ 740:	98 2e       	mov	r9, r24
+	pos -= 0x02;
+	
+	// read $length characters
+	xor = NO;
+	counter = 0x00;
+	while (counter<length+1){
+ 742:	2a 2d       	mov	r18, r10
+ 744:	30 e0       	ldi	r19, 0x00	; 0
+ 746:	c2 16       	cp	r12, r18
+ 748:	d3 06       	cpc	r13, r19
+ 74a:	04 f0       	brlt	.+0      	; 0x74c <read_API_Buffer1+0x98>
+		if (RXBuffer1_timed_read(&c,1,timeout)==FAILED) return FAILED;
+ 74c:	4b 2d       	mov	r20, r11
+ 74e:	61 e0       	ldi	r22, 0x01	; 1
+ 750:	ce 01       	movw	r24, r28
+ 752:	02 96       	adiw	r24, 0x02	; 2
+ 754:	5b 83       	std	Y+3, r21	; 0x03
+ 756:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 75a:	5b 81       	ldd	r21, Y+3	; 0x03
+ 75c:	88 23       	and	r24, r24
+ 75e:	01 f0       	breq	.+0      	; 0x760 <read_API_Buffer1+0xac>
+ 760:	8a 81       	ldd	r24, Y+2	; 0x02
+		if (xor==YES){		
+ 762:	51 30       	cpi	r21, 0x01	; 1
+ 764:	01 f4       	brne	.+0      	; 0x766 <read_API_Buffer1+0xb2>
+		    c ^= API_XOR_MASK;
+ 766:	89 25       	eor	r24, r9
+ 768:	8a 83       	std	Y+2, r24	; 0x02
+ 76a:	00 c0       	rjmp	.+0      	; 0x76c <read_API_Buffer1+0xb8>
+			xor = NO;
+		}
+		else if (c==API_ESCAPE) xor = YES;
+ 76c:	8d 37       	cpi	r24, 0x7D	; 125
+ 76e:	01 f4       	brne	.+0      	; 0x770 <read_API_Buffer1+0xbc>
+ 770:	51 e0       	ldi	r21, 0x01	; 1
+ 772:	00 c0       	rjmp	.+0      	; 0x774 <read_API_Buffer1+0xc0>
+			counter++;
+		}
+	}
+	
+	// test checksum	
+	if (test_check_sum(Buffer,0,pos-2,Buffer[pos-1])==FAILED) return FAILED;
+ 774:	49 81       	ldd	r20, Y+1	; 0x01
+ 776:	f8 01       	movw	r30, r16
+ 778:	e4 0f       	add	r30, r20
+ 77a:	f1 1d       	adc	r31, r1
+ 77c:	31 97       	sbiw	r30, 0x01	; 1
+ 77e:	42 50       	subi	r20, 0x02	; 2
+ 780:	20 81       	ld	r18, Z
+ 782:	60 e0       	ldi	r22, 0x00	; 0
+ 784:	c8 01       	movw	r24, r16
+ 786:	0e 94 00 00 	call	0	; 0x0 <__vector_9>
+ 78a:	88 23       	and	r24, r24
+ 78c:	01 f4       	brne	.+0      	; 0x78e <read_API_Buffer1+0xda>
+ 78e:	00 c0       	rjmp	.+0      	; 0x790 <read_API_Buffer1+0xdc>
+	
+	*size = pos-1;
+ 790:	89 81       	ldd	r24, Y+1	; 0x01
+ 792:	81 50       	subi	r24, 0x01	; 1
+ 794:	f7 01       	movw	r30, r14
+ 796:	80 83       	st	Z, r24
+	return SUCCESS;
+ 798:	81 e0       	ldi	r24, 0x01	; 1
+ 79a:	00 c0       	rjmp	.+0      	; 0x79c <read_API_Buffer1+0xe8>
+			xor = NO;
+		}
+		else if (c==API_ESCAPE) xor = YES;
+		
+		if (xor==NO){
+			Buffer[pos++] = c;
+ 79c:	89 81       	ldd	r24, Y+1	; 0x01
+ 79e:	91 e0       	ldi	r25, 0x01	; 1
+ 7a0:	98 0f       	add	r25, r24
+ 7a2:	99 83       	std	Y+1, r25	; 0x01
+ 7a4:	f8 01       	movw	r30, r16
+ 7a6:	e8 0f       	add	r30, r24
+ 7a8:	f1 1d       	adc	r31, r1
+ 7aa:	8a 81       	ldd	r24, Y+2	; 0x02
+ 7ac:	80 83       	st	Z, r24
+			counter++;
+ 7ae:	a3 94       	inc	r10
+ 7b0:	50 e0       	ldi	r21, 0x00	; 0
+ 7b2:	00 c0       	rjmp	.+0      	; 0x7b4 <read_API_Buffer1+0x100>
+	// test checksum	
+	if (test_check_sum(Buffer,0,pos-2,Buffer[pos-1])==FAILED) return FAILED;
+	
+	*size = pos-1;
+	return SUCCESS;
+}
+ 7b4:	0f 90       	pop	r0
+ 7b6:	0f 90       	pop	r0
+ 7b8:	0f 90       	pop	r0
+ 7ba:	df 91       	pop	r29
+ 7bc:	cf 91       	pop	r28
+ 7be:	1f 91       	pop	r17
+ 7c0:	0f 91       	pop	r16
+ 7c2:	ff 90       	pop	r15
+ 7c4:	ef 90       	pop	r14
+ 7c6:	df 90       	pop	r13
+ 7c8:	cf 90       	pop	r12
+ 7ca:	bf 90       	pop	r11
+ 7cc:	af 90       	pop	r10
+ 7ce:	9f 90       	pop	r9
+ 7d0:	08 95       	ret

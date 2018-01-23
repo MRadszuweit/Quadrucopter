@@ -1,0 +1,11 @@
+Sehr geehrtes Conrad-Kundenteam, 
+vor einiger Zeit habe ich 4 von den oben genannten ESCs bei Ihnen erworben. 
+Leider ist mir trotz studieren der Betriebsanleitung nicht klar geworden wie man den Regler auf auf das Steuer-PWM-Signal kalibriert (also minimal/maximal Gas). 
+Ich habe dies wie bei einigen anderen Reglern üblich mit Vollgas, dan Akku ran, dann Minimalstellung und Akku weg versucht. Leider hat das nicht nur nicht funktioniert, sondern auch die Einstellung verändert, so dass der Motor (Robbe Roxxy 26/27) beim Steuersignal nur noch kurz anläuft dann aber sofort ausgeht. Auch ein Reset mit der Programmierkarte ( 239743 - 62) konnte dies nicht beheben. 
+Ich hoffe, dass Sie mir bei diesem Problem 
+weiterhelfen können und bedanke mich im Voraus.
+
+Mit freundlichen Grüßen,
+
+Markus Radszuweit
+ 

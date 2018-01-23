@@ -1,0 +1,182 @@
+
+qcopter.o:     Dateiformat elf32-avr
+
+
+Disassembly of section .text:
+
+00000000 <__vector_default>:
+   0:	1f 92       	push	r1
+   2:	0f 92       	push	r0
+   4:	0f b6       	in	r0, 0x3f	; 63
+   6:	0f 92       	push	r0
+   8:	11 24       	eor	r1, r1
+   a:	0f 90       	pop	r0
+   c:	0f be       	out	0x3f, r0	; 63
+   e:	0f 90       	pop	r0
+  10:	1f 90       	pop	r1
+  12:	18 95       	reti
+
+00000014 <init_ports>:
+
+/////////////////////// functions /////////////////////////////////////
+
+void init_ports(){
+	
+	DDRA = 0x00;		// input
+  14:	1a ba       	out	0x1a, r1	; 26
+	PORTA = 0xFF;		// pullups on
+  16:	8f ef       	ldi	r24, 0xFF	; 255
+  18:	8b bb       	out	0x1b, r24	; 27
+	
+	DDRB = (1<<PB4);	
+  1a:	90 e1       	ldi	r25, 0x10	; 16
+  1c:	97 bb       	out	0x17, r25	; 23
+	PORTB = 0xFF;	
+  1e:	88 bb       	out	0x18, r24	; 24
+	
+	DDRC = 0x00;		
+  20:	14 ba       	out	0x14, r1	; 20
+	PORTC = 0xFF;		
+  22:	85 bb       	out	0x15, r24	; 21
+	
+	DDRD = (1<<PD3);		
+  24:	98 e0       	ldi	r25, 0x08	; 8
+  26:	91 bb       	out	0x11, r25	; 17
+	PORTD = 0xFF;		
+  28:	82 bb       	out	0x12, r24	; 18
+	
+	DDRE = (1<<PE2) | (1<<PE3) | (1<<PE4) | (1<<PE5);		
+  2a:	9c e3       	ldi	r25, 0x3C	; 60
+  2c:	92 b9       	out	0x02, r25	; 2
+	PORTE = (1<<PE3) | (1<<PE4) | (1<<PE5);
+  2e:	98 e3       	ldi	r25, 0x38	; 56
+  30:	93 b9       	out	0x03, r25	; 3
+	
+	DDRF = 0x00;		
+  32:	10 92 61 00 	sts	0x0061, r1
+	PORTF = 0xFF;	
+  36:	80 93 62 00 	sts	0x0062, r24
+
+	DDRG = 0x00;		
+  3a:	10 92 64 00 	sts	0x0064, r1
+	PORTG = 0xFF;		
+  3e:	80 93 65 00 	sts	0x0065, r24
+  42:	08 95       	ret
+
+00000044 <init_motor_pwm>:
+}
+
+void init_motor_pwm(){	
+	ICR1 = MOTOR_FULL_CYCLE;
+  44:	80 e0       	ldi	r24, 0x00	; 0
+  46:	98 e4       	ldi	r25, 0x48	; 72
+  48:	97 bd       	out	0x27, r25	; 39
+  4a:	86 bd       	out	0x26, r24	; 38
+	ICR3 = MOTOR_FULL_CYCLE;
+  4c:	90 93 81 00 	sts	0x0081, r25
+  50:	80 93 80 00 	sts	0x0080, r24
+	
+	timer_init_13(TIMER1,FAST_PWM_MODE_ICR,MOTOR_PRESC);
+  54:	42 e0       	ldi	r20, 0x02	; 2
+  56:	6e e0       	ldi	r22, 0x0E	; 14
+  58:	81 e0       	ldi	r24, 0x01	; 1
+  5a:	0e 94 00 00 	call	0	; 0x0 <__vector_default>
+	timer_init_13(TIMER3,FAST_PWM_MODE_ICR,MOTOR_PRESC);
+  5e:	42 e0       	ldi	r20, 0x02	; 2
+  60:	6e e0       	ldi	r22, 0x0E	; 14
+  62:	83 e0       	ldi	r24, 0x03	; 3
+  64:	0e 94 00 00 	call	0	; 0x0 <__vector_default>
+	
+	timer_channel_settings_13(TIMER1,CHANNEL_A,CLEAR_ON_MATCH,MOTOR_STANDBY);
+  68:	2a e9       	ldi	r18, 0x9A	; 154
+  6a:	33 e0       	ldi	r19, 0x03	; 3
+  6c:	42 e0       	ldi	r20, 0x02	; 2
+  6e:	61 e0       	ldi	r22, 0x01	; 1
+  70:	81 e0       	ldi	r24, 0x01	; 1
+  72:	0e 94 00 00 	call	0	; 0x0 <__vector_default>
+	timer_channel_settings_13(TIMER1,CHANNEL_B,CLEAR_ON_MATCH,MOTOR_STANDBY);
+  76:	2a e9       	ldi	r18, 0x9A	; 154
+  78:	33 e0       	ldi	r19, 0x03	; 3
+  7a:	42 e0       	ldi	r20, 0x02	; 2
+  7c:	62 e0       	ldi	r22, 0x02	; 2
+  7e:	81 e0       	ldi	r24, 0x01	; 1
+  80:	0e 94 00 00 	call	0	; 0x0 <__vector_default>
+	timer_channel_settings_13(TIMER1,CHANNEL_C,CLEAR_ON_MATCH,MOTOR_STANDBY);
+  84:	2a e9       	ldi	r18, 0x9A	; 154
+  86:	33 e0       	ldi	r19, 0x03	; 3
+  88:	42 e0       	ldi	r20, 0x02	; 2
+  8a:	63 e0       	ldi	r22, 0x03	; 3
+  8c:	81 e0       	ldi	r24, 0x01	; 1
+  8e:	0c 94 00 00 	jmp	0	; 0x0 <__vector_default>
+
+Disassembly of section .text.startup:
+
+00000092 <main>:
+  92:	cf 93       	push	r28
+  94:	df 93       	push	r29
+  96:	cd b7       	in	r28, 0x3d	; 61
+  98:	de b7       	in	r29, 0x3e	; 62
+  9a:	29 97       	sbiw	r28, 0x09	; 9
+  9c:	0f b6       	in	r0, 0x3f	; 63
+  9e:	f8 94       	cli
+  a0:	de bf       	out	0x3e, r29	; 62
+  a2:	0f be       	out	0x3f, r0	; 63
+  a4:	cd bf       	out	0x3d, r28	; 61
+  a6:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+  aa:	27 e0       	ldi	r18, 0x07	; 7
+  ac:	4f ef       	ldi	r20, 0xFF	; 255
+  ae:	61 e0       	ldi	r22, 0x01	; 1
+  b0:	84 e0       	ldi	r24, 0x04	; 4
+  b2:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+  b6:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+  ba:	00 e0       	ldi	r16, 0x00	; 0
+  bc:	20 e0       	ldi	r18, 0x00	; 0
+  be:	41 e0       	ldi	r20, 0x01	; 1
+  c0:	63 e0       	ldi	r22, 0x03	; 3
+  c2:	81 e0       	ldi	r24, 0x01	; 1
+  c4:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+  c8:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+  cc:	19 82       	std	Y+1, r1	; 0x01
+  ce:	83 e1       	ldi	r24, 0x13	; 19
+  d0:	8a 83       	std	Y+2, r24	; 0x02
+  d2:	82 ea       	ldi	r24, 0xA2	; 162
+  d4:	8b 83       	std	Y+3, r24	; 0x03
+  d6:	1c 82       	std	Y+4, r1	; 0x04
+  d8:	80 e4       	ldi	r24, 0x40	; 64
+  da:	8d 83       	std	Y+5, r24	; 0x05
+  dc:	85 ec       	ldi	r24, 0xC5	; 197
+  de:	8e 83       	std	Y+6, r24	; 0x06
+  e0:	89 e7       	ldi	r24, 0x79	; 121
+  e2:	8f 83       	std	Y+7, r24	; 0x07
+  e4:	88 eb       	ldi	r24, 0xB8	; 184
+  e6:	88 87       	std	Y+8, r24	; 0x08
+  e8:	ce 01       	movw	r24, r28
+  ea:	01 96       	adiw	r24, 0x01	; 1
+  ec:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+  f0:	78 94       	sei
+  f2:	2f ef       	ldi	r18, 0xFF	; 255
+  f4:	8f e7       	ldi	r24, 0x7F	; 127
+  f6:	96 e1       	ldi	r25, 0x16	; 22
+  f8:	21 50       	subi	r18, 0x01	; 1
+  fa:	80 40       	sbci	r24, 0x00	; 0
+  fc:	90 40       	sbci	r25, 0x00	; 0
+  fe:	01 f4       	brne	.+0      	; 0x100 <main+0x6e>
+ 100:	00 c0       	rjmp	.+0      	; 0x102 <main+0x70>
+ 102:	00 00       	nop
+ 104:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 108:	89 87       	std	Y+9, r24	; 0x09
+ 10a:	0f ef       	ldi	r16, 0xFF	; 255
+ 10c:	20 e0       	ldi	r18, 0x00	; 0
+ 10e:	40 e0       	ldi	r20, 0x00	; 0
+ 110:	61 e0       	ldi	r22, 0x01	; 1
+ 112:	ce 01       	movw	r24, r28
+ 114:	09 96       	adiw	r24, 0x09	; 9
+ 116:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 11a:	81 30       	cpi	r24, 0x01	; 1
+ 11c:	01 f4       	brne	.+0      	; 0x11e <main+0x8c>
+ 11e:	0b 9b       	sbis	0x01, 3	; 1
+ 120:	00 c0       	rjmp	.+0      	; 0x122 <main+0x90>
+ 122:	1b 98       	cbi	0x03, 3	; 3
+ 124:	00 c0       	rjmp	.+0      	; 0x126 <main+0x94>
+ 126:	1b 9a       	sbi	0x03, 3	; 3
+ 128:	00 c0       	rjmp	.+0      	; 0x12a <init_motor_pwm+0xe6>

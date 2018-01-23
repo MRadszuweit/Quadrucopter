@@ -1,0 +1,140 @@
+
+qcopter.o:     Dateiformat elf32-avr
+
+
+Disassembly of section .text:
+
+00000000 <__vector_default>:
+   0:	1f 92       	push	r1
+   2:	0f 92       	push	r0
+   4:	0f b6       	in	r0, 0x3f	; 63
+   6:	0f 92       	push	r0
+   8:	11 24       	eor	r1, r1
+   a:	0f 90       	pop	r0
+   c:	0f be       	out	0x3f, r0	; 63
+   e:	0f 90       	pop	r0
+  10:	1f 90       	pop	r1
+  12:	18 95       	reti
+
+00000014 <init_ports>:
+  14:	1a ba       	out	0x1a, r1	; 26
+  16:	8f ef       	ldi	r24, 0xFF	; 255
+  18:	8b bb       	out	0x1b, r24	; 27
+  1a:	90 e1       	ldi	r25, 0x10	; 16
+  1c:	97 bb       	out	0x17, r25	; 23
+  1e:	88 bb       	out	0x18, r24	; 24
+  20:	14 ba       	out	0x14, r1	; 20
+  22:	85 bb       	out	0x15, r24	; 21
+  24:	98 e0       	ldi	r25, 0x08	; 8
+  26:	91 bb       	out	0x11, r25	; 17
+  28:	82 bb       	out	0x12, r24	; 18
+  2a:	9c e3       	ldi	r25, 0x3C	; 60
+  2c:	92 b9       	out	0x02, r25	; 2
+  2e:	98 e3       	ldi	r25, 0x38	; 56
+  30:	93 b9       	out	0x03, r25	; 3
+  32:	10 92 61 00 	sts	0x0061, r1
+  36:	80 93 62 00 	sts	0x0062, r24
+  3a:	10 92 64 00 	sts	0x0064, r1
+  3e:	80 93 65 00 	sts	0x0065, r24
+  42:	08 95       	ret
+
+00000044 <init_motor_pwm>:
+  44:	80 e0       	ldi	r24, 0x00	; 0
+  46:	98 e4       	ldi	r25, 0x48	; 72
+  48:	97 bd       	out	0x27, r25	; 39
+  4a:	86 bd       	out	0x26, r24	; 38
+  4c:	90 93 81 00 	sts	0x0081, r25
+  50:	80 93 80 00 	sts	0x0080, r24
+  54:	42 e0       	ldi	r20, 0x02	; 2
+  56:	6e e0       	ldi	r22, 0x0E	; 14
+  58:	81 e0       	ldi	r24, 0x01	; 1
+  5a:	0e 94 00 00 	call	0	; 0x0 <__vector_default>
+  5e:	42 e0       	ldi	r20, 0x02	; 2
+  60:	6e e0       	ldi	r22, 0x0E	; 14
+  62:	83 e0       	ldi	r24, 0x03	; 3
+  64:	0e 94 00 00 	call	0	; 0x0 <__vector_default>
+  68:	2a e9       	ldi	r18, 0x9A	; 154
+  6a:	33 e0       	ldi	r19, 0x03	; 3
+  6c:	42 e0       	ldi	r20, 0x02	; 2
+  6e:	61 e0       	ldi	r22, 0x01	; 1
+  70:	81 e0       	ldi	r24, 0x01	; 1
+  72:	0e 94 00 00 	call	0	; 0x0 <__vector_default>
+  76:	2a e9       	ldi	r18, 0x9A	; 154
+  78:	33 e0       	ldi	r19, 0x03	; 3
+  7a:	42 e0       	ldi	r20, 0x02	; 2
+  7c:	62 e0       	ldi	r22, 0x02	; 2
+  7e:	81 e0       	ldi	r24, 0x01	; 1
+  80:	0e 94 00 00 	call	0	; 0x0 <__vector_default>
+  84:	2a e9       	ldi	r18, 0x9A	; 154
+  86:	33 e0       	ldi	r19, 0x03	; 3
+  88:	42 e0       	ldi	r20, 0x02	; 2
+  8a:	63 e0       	ldi	r22, 0x03	; 3
+  8c:	81 e0       	ldi	r24, 0x01	; 1
+  8e:	0c 94 00 00 	jmp	0	; 0x0 <__vector_default>
+
+Disassembly of section .text.startup:
+
+0000012c <main>:
+ 12c:	cf 93       	push	r28
+ 12e:	df 93       	push	r29
+ 130:	cd b7       	in	r28, 0x3d	; 61
+ 132:	de b7       	in	r29, 0x3e	; 62
+ 134:	29 97       	sbiw	r28, 0x09	; 9
+ 136:	0f b6       	in	r0, 0x3f	; 63
+ 138:	f8 94       	cli
+ 13a:	de bf       	out	0x3e, r29	; 62
+ 13c:	0f be       	out	0x3f, r0	; 63
+ 13e:	cd bf       	out	0x3d, r28	; 61
+ 140:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 144:	27 e0       	ldi	r18, 0x07	; 7
+ 146:	4f ef       	ldi	r20, 0xFF	; 255
+ 148:	61 e0       	ldi	r22, 0x01	; 1
+ 14a:	84 e0       	ldi	r24, 0x04	; 4
+ 14c:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 150:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 154:	00 e0       	ldi	r16, 0x00	; 0
+ 156:	20 e0       	ldi	r18, 0x00	; 0
+ 158:	41 e0       	ldi	r20, 0x01	; 1
+ 15a:	63 e0       	ldi	r22, 0x03	; 3
+ 15c:	81 e0       	ldi	r24, 0x01	; 1
+ 15e:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 162:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 166:	88 e0       	ldi	r24, 0x08	; 8
+ 168:	e0 e0       	ldi	r30, 0x00	; 0
+ 16a:	f0 e0       	ldi	r31, 0x00	; 0
+ 16c:	de 01       	movw	r26, r28
+ 16e:	11 96       	adiw	r26, 0x01	; 1
+ 170:	01 90       	ld	r0, Z+
+ 172:	0d 92       	st	X+, r0
+ 174:	8a 95       	dec	r24
+ 176:	01 f4       	brne	.+0      	; 0x178 <main+0x4c>
+ 178:	ce 01       	movw	r24, r28
+ 17a:	01 96       	adiw	r24, 0x01	; 1
+ 17c:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 180:	78 94       	sei
+ 182:	2f ef       	ldi	r18, 0xFF	; 255
+ 184:	8f e7       	ldi	r24, 0x7F	; 127
+ 186:	96 e1       	ldi	r25, 0x16	; 22
+ 188:	21 50       	subi	r18, 0x01	; 1
+ 18a:	80 40       	sbci	r24, 0x00	; 0
+ 18c:	90 40       	sbci	r25, 0x00	; 0
+ 18e:	01 f4       	brne	.+0      	; 0x190 <main+0x64>
+ 190:	00 c0       	rjmp	.+0      	; 0x192 <main+0x66>
+ 192:	00 00       	nop
+ 194:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 198:	89 87       	std	Y+9, r24	; 0x09
+ 19a:	0f ef       	ldi	r16, 0xFF	; 255
+ 19c:	20 e0       	ldi	r18, 0x00	; 0
+ 19e:	40 e0       	ldi	r20, 0x00	; 0
+ 1a0:	61 e0       	ldi	r22, 0x01	; 1
+ 1a2:	ce 01       	movw	r24, r28
+ 1a4:	09 96       	adiw	r24, 0x09	; 9
+ 1a6:	0e 94 00 00 	call	0	; 0x0 <__tmp_reg__>
+ 1aa:	81 30       	cpi	r24, 0x01	; 1
+ 1ac:	01 f4       	brne	.+0      	; 0x1ae <main+0x82>
+ 1ae:	0b 9b       	sbis	0x01, 3	; 1
+ 1b0:	00 c0       	rjmp	.+0      	; 0x1b2 <main+0x86>
+ 1b2:	1b 98       	cbi	0x03, 3	; 3
+ 1b4:	00 c0       	rjmp	.+0      	; 0x1b6 <main+0x8a>
+ 1b6:	1b 9a       	sbi	0x03, 3	; 3
+ 1b8:	00 c0       	rjmp	.+0      	; 0x1ba <init_motor_pwm+0x176>
